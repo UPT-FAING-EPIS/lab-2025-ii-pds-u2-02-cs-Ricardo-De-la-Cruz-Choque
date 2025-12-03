@@ -1,19 +1,16 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/qX_M5zXi)
-[![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=21925017)
-# SESION DE LABORATORIO N° 02: PATRONES DE DISEÑO ESTRUCTURALES
-
-### Nombre: 
+[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/6MpP3zm6)
+[![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=21597417)
+# SESION DE LABORATORIO N° 03: PATRONES DE DISEÑO DE COMPORTAMIENTO
+### Alumno : Brayar Christian, Lopez Catunta
 
 ## OBJETIVOS
-  * Comprender el funcionamiento de algunos patrones de diseño de software del tipo estructural.
+  * Comprender el funcionamiento de algunos patrones de diseño de software del tipo de comportamiento.
 
 ## REQUERIMIENTOS
   * Conocimientos: 
     - Conocimientos básicos de Bash (powershell).
-    - Conocimientos básicos de Contenedores (Docker).
+    - Conocimientos básicos de C# y Visual Studio Code.
   * Hardware:
-    - Virtualization activada en el BIOS..
-    - CPU SLAT-capable feature.
     - Al menos 4GB de RAM.
   * Software:
     - Windows 10 64bit: Pro, Enterprise o Education (1607 Anniversary Update, Build 14393 o Superior)
@@ -27,154 +24,170 @@
 
 ## DESARROLLO
 
-### PARTE I: Bridge Design Pattern 
+### PARTE I: Strategy Design Pattern 
 
-![image](https://github.com/UPT-FAING-EPIS/SI889_PDS/assets/10199939/186e0bbd-0d14-48eb-af20-8f46dc0a08ca)
-
-![image](https://github.com/UPT-FAING-EPIS/SI889_PDS/assets/10199939/fab291c1-01e9-4a11-bfbd-a34609466cab)
+![image](https://github.com/UPT-FAING-EPIS/SI889_PDS/assets/10199939/21cf440e-8156-498c-afd7-95c066ffaa93)
+En la imagen Steve compra un monitor y una lavadora, pero a la hora de acercarse a la ventanilla existen tres formas de pagar: Tarjeta de Crédito, Tarjeta de Débito y Efectivo.
 
 1. Iniciar la aplicación Powershell o Windows Terminal en modo administrador 
 2. Ejecutar el siguiente comando para crear una nueva solución
 ```
-dotnet new sln -o Notifications
+dotnet new sln -o Payment
 ```
 3. Acceder a la solución creada y ejecutar el siguiente comando para crear una nueva libreria de clases y adicionarla a la solución actual.
 ```
-cd Notifications
-dotnet new classlib -o Notifications.Domain
-dotnet sln add ./Notifications.Domain/Notifications.Domain.csproj
+cd Payment
+dotnet new classlib -o Payment.Domain
+dotnet sln add ./Payment.Domain/Payment.Domain.csproj
 ```
 4. Ejecutar el siguiente comando para crear un nuevo proyecto de pruebas y adicionarla a la solución actual
 ```
-dotnet new nunit -o Notifications.Domain.Tests
-dotnet sln add ./Notifications.Domain.Tests/Notifications.Domain.Tests.csproj
-dotnet add ./Notifications.Domain.Tests/Notifications.Domain.Tests.csproj reference ./Notifications.Domain/Notifications.Domain.csproj
+dotnet new nunit -o Payment.Domain.Tests
+dotnet sln add ./Payment.Domain.Tests/Payment.Domain.Tests.csproj
+dotnet add ./Payment.Domain.Tests/Payment.Domain.Tests.csproj reference ./Payment.Domain/Payment.Domain.csproj
 ```
-5. Iniciar Visual Studio Code (VS Code) abriendo el folder de la solución como proyecto. En el proyecto Notifications.Domain, si existe un archivo Class1.cs proceder a eliminarlo. Asimismo en el proyecto Notifications.Domain.Tests si existiese un archivo UnitTest1.cs, también proceder a eliminarlo.
+5. Iniciar Visual Studio Code (VS Code) abriendo el folder de la solución como proyecto. En el proyecto Payment.Domain, si existe un archivo Class1.cs proceder a eliminarlo. Asimismo en el proyecto Payment.Domain.Tests si existiese un archivo UnitTest1.cs, también proceder a eliminarlo.
 
-6. Primero se necesita implementar la interfaz que servirá de PUENTE entre la clase abstracta de mensajes y las posible implementaciones de envio. Por eso en VS Code, en el proyecto Notifications.Domain proceder a crear el archivo IMessageSender.cs :
+6. Primero se necesita implementar la interfaz que servirá de ESTRATEGIA base para las posibles implementaciones de pagos. Por eso en VS Code, en el proyecto Notifications.Domain proceder a crear el archivo IPaymentStrategy.cs :
 ```C#
-namespace Notifications.Domain
+namespace Payment.Domain
 {
-    public interface IMessageSender
+    public interface IPaymentStrategy
     {
-        string SendMessage(string Message);
+        bool Pay(double amount);
     }
 }
 ```
-7. Ahora proceder a implementar las clases concretas o implementaiones a partir de la interfaz creada, Para esto en el proyecto Notifications.Domain proceder a crear los archivos siguientes:
-> SmsMessageSender.cs
+7. Ahora proceder a implementar las clases concretas o implementaciones a partir de la interfaz creada, Para esto en el proyecto Payment.Domain proceder a crear los archivos siguientes:
+> CreditCardPaymentStrategy.cs
 ```C#
-namespace Notifications.Domain
+namespace Payment.Domain
 {
-    public class SmsMessageSender : IMessageSender
+    public class CreditCardPaymentStrategy : IPaymentStrategy
     {
-        public string SendMessage(string Message)
+        public bool Pay(double amount)
         {
-            return "'" + Message + "' : This Message has been sent using SMS";
+            Console.WriteLine("Customer pays Rs " + amount + " using Credit Card");
+            return true;
         }
     }
 }
 ```
-> EmailMessageSender.cs
+> DebitCardPaymentStrategy.cs
 ```C#
-namespace Notifications.Domain
+namespace Payment.Domain
 {
-    public class EmailMessageSender : IMessageSender
+    public class DebitCardPaymentStrategy : IPaymentStrategy
     {
-        public string SendMessage(string Message)
+        public bool Pay(double amount)
         {
-            return "'" + Message + "'   : This Message has been sent using Email";
+            Console.WriteLine("Customer pays Rs " + amount + " using Debit Card");
+            return true;
         }
     }
 }
 ```
-8. Seguidamente crear la clase abstracta que permitira definir los posibles tipos de mensajes por lo que en el proyecto de Notifications.Domain se debe agregar el archivo AbstractMessage.cs con el siguiente código:
+> CashPaymentStrategy.cs
 ```C#
-namespace Notifications.Domain
+namespace Payment.Domain
 {
-    public abstract class AbstractMessage
+    public class CashPaymentStrategy : IPaymentStrategy
     {
-        protected IMessageSender _messageSender;
-        public abstract string SendMessage(string Message);        
+        public bool Pay(double amount)
+        {
+            Console.WriteLine("Customer pays Rs " + amount + " By Cash");
+            return true;
+        }
     }
 }
 ```
-9. Sobre esta clase abstracta ahora se necesita implementar los tipos de mensajes concretos, para eso adicionar los siguientes archivos al proyecto Notifications.Domain:
-> ShortMessage.cs
+8. Seguidamente crear la clase que funcionara de contexto y permitira la ejecución de cualquier estrategia, por lo que en el proyecto de Payment.Domain se debe agregar el archivo PaymentContext.cs con el siguiente código:
 ```C#
-namespace Notifications.Domain
+namespace Payment.Domain
 {
-    public class ShortMessage: AbstractMessage
+    public class PaymentContext
     {
-        public const string LARGE_ERROR_MESSAGE = "Unable to send the message as length > 10 characters";
-        public ShortMessage(IMessageSender messageSender)
+        // The Context has a reference to the Strategy object.
+        // The Context does not know the concrete class of a strategy. 
+        // It should work with all strategies via the Strategy interface.
+        private IPaymentStrategy PaymentStrategy;
+        // The Client will set what PaymentStrategy to use by calling this method at runtime
+        public void SetPaymentStrategy(IPaymentStrategy strategy)
         {
-            this._messageSender = messageSender;
+            PaymentStrategy = strategy;
         }
-        public override string SendMessage(string Message)
+        // The Context delegates the work to the Strategy object instead of
+        // implementing multiple versions of the algorithm on its own.
+        public bool Pay(double amount)
         {
-            if (Message.Length <= 25)
-                return _messageSender.SendMessage(Message);
+            return PaymentStrategy.Pay(amount);
+        }
+    }
+}
+```
+9. Adicionalmente para facilitar la utilización de las diferentes estrategias adicionaremos una fachada, para eso crear el archivo PaymentService.cs en el proyecto Payment.Domain:
+```C#
+namespace Payment.Domain
+{
+    public class PaymentService
+    {
+        public bool ProcessPayment(int SelectedPaymentType, double Amount)
+        {
+            //Create an Instance of the PaymentContext class
+            PaymentContext context = new PaymentContext();
+            if (SelectedPaymentType == (int)PaymentType.CreditCard)
+            {
+                context.SetPaymentStrategy(new CreditCardPaymentStrategy());
+            }
+            else if (SelectedPaymentType == (int)PaymentType.DebitCard)
+            {
+                context.SetPaymentStrategy(new DebitCardPaymentStrategy());
+            }
+            else if (SelectedPaymentType == (int)PaymentType.Cash)
+            {
+                context.SetPaymentStrategy(new CashPaymentStrategy());
+            }
             else
-                throw new ArgumentException(LARGE_ERROR_MESSAGE);
+            {
+                throw new ArgumentException("You Select an Invalid Payment Option");
+            }
+            //Finally, call the Pay Method
+            return context.Pay(Amount);;
         }
     }
-}
-```
-> LongMessage.cs
-```C#
-namespace Notifications.Domain
-{
-    public class LongMessage: AbstractMessage
+    public enum PaymentType
     {
-        public LongMessage(IMessageSender messageSender)
-        {
-            this._messageSender = messageSender;
-        }
-        public override string SendMessage(string Message)
-        {
-           return _messageSender.SendMessage(Message);
-        }
+        CreditCard = 1,  // 1 for CreditCard
+        DebitCard = 2,   // 2 for DebitCard
+        Cash = 3, // 3 for Cash
     }
 }
 ```
-10. Ahora proceder a implementar unas pruebas para verificar el correcto funcionamiento de la aplicación. Para esto al proyecto Notifications.Domain.Tests adicionar el archivo MessageTests.cs y agregar el siguiente código:
+10. Ahora proceder a implementar unas pruebas para verificar el correcto funcionamiento de la aplicación. Para esto al proyecto Payment.Domain.Tests adicionar el archivo PaymentTests.cs y agregar el siguiente código:
 ```C#
-using Notifications.Domain;
+using System;
 using NUnit.Framework;
-
-namespace Notifications.Domain.Tests
+using Payment.Domain;
+namespace Payment.Domain.Tests
 {
-    public class MessageTests
+    public class PaymentTests
     {
-        [Test]
-        public void GivenLongMessage_WhenSend_ThenEmailIsTriggered()
+        [TestCase(1, 1000)]
+        [TestCase(2, 2000)]
+        [TestCase(3, 3000)]
+        public void GivenAValidPaymentTypeAndAmount_WhenProcessPayment_ResultIsSuccesful(int paymentType, double amount)
         {
-            string Message = "Este es un mensaje bien pero bien largoooooooooooooooooooooooo.";
-            AbstractMessage longMessage = new LongMessage(new EmailMessageSender());
-            var confirm = longMessage.SendMessage(Message);
-            Assert.IsTrue(!string.IsNullOrEmpty(confirm));
-            Assert.IsTrue(confirm.Contains(Message));
+            bool PaymentResult = new PaymentService().ProcessPayment(paymentType, amount);
+            Assert.IsTrue(PaymentResult);
         }
-        [Test]
-        public void GivenShortMessage_WhenSend_ThenSMSIsTriggered()
+        [TestCase(4, 4000)]
+        public void GivenAnUnknownPaymentTypeAndAmount_WhenProcessPayment_ResultIsError(int paymentType, double amount)
         {
-            string Message = "Este es un mensaje corto.";
-            AbstractMessage shortMessage = new ShortMessage(new SmsMessageSender());
-            var confirm = shortMessage.SendMessage(Message);
-            Assert.IsTrue(!string.IsNullOrEmpty(confirm));
-            Assert.IsTrue(confirm.Contains(Message));
-        }
-        [Test]
-        public void GivenLargeMessage_WhenSendinSMS_ThenOccursException()
-        {
-            string Message = "Este es un mensaje largooooooooooooooooo.";
-            AbstractMessage shortMessage = new ShortMessage(new SmsMessageSender());
-            Assert.Throws<ArgumentException>(
-                () => shortMessage.SendMessage(Message)
-                , ShortMessage.LARGE_ERROR_MESSAGE);
-        }
+            //bool PaymentResult = new PaymentService().ProcessPayment(paymentType, amount);
+            var ex = Assert.Throws<ArgumentException>(
+                () => new PaymentService().ProcessPayment(paymentType, amount));
+            Assert.That(ex.Message, Is.EqualTo("You Select an Invalid Payment Option"));
+        }   
     }
 }
 ```
@@ -184,222 +197,195 @@ dotnet test --collect:"XPlat Code Coverage"
 ```
 12. Si las pruebas se ejecutaron correctamente debera aparcer un resultado similar al siguiente:
 ```Bash
-Passed!  - Failed:     0, Passed:     3, Skipped:     0, Total:     3, Duration: 5 ms
+Passed!  - Failed:     0, Passed:     4, Skipped:     0, Total:     4, Duration: 12 ms
 ```
-13. En el terminal, ejecutar el siguiente comando para generar el diagrama de clases respectivo, tener en consideración que ruta del DLL puede ser distinta según la versión de .NET tenga instalada en el equipo.
+
+13. Finalmente se puede apreciar que existen tres componentes principales en el patrón ESTARTEGIA:
+a. Estrategia: declarada en una interfac para ser implementada para todos los algoritmos soportado
+b. EstrategiaConcreta: Es la implementa la estrategia para cada algoritmo
+c. Conexto: esta es la clase que mantiene la referencia al objeto Estrategia y luego utiliza la referencia para llamar al algoritmo definido por cada EstrtaegiaConcreta
+
+![image](https://github.com/UPT-FAING-EPIS/SI889_PDS/assets/10199939/e132b3dd-1b5d-4cdf-a91d-fe114071c4bb)
+
+14. En el terminal, ejecutar el siguiente comando para generar el diagrama de clases respectivo, tener en consideración que ruta del DLL puede ser distinta según la versión de .NET tenga instalada en el equipo.
 ```Bash
 dotnet tool install --global dll2mmd
-dll2mmd -f Notifications.Domain/bin/Debug/net8.0/Notifications.Domain.dll -o disenio.md
+dll2mmd -f Payment.Domain/bin/Debug/net7.0/Payment.Domain.dll -o payment.md
 ```
 
-### PARTE II: Facade Design Pattern
 
-![image](https://github.com/UPT-FAING-EPIS/SI889_PDS/assets/10199939/ece5c02f-fe5e-4125-91f4-7479f6c3d746)
-
+### PARTE II: Command Design Pattern
 
 1. Iniciar una nueva instancia de la aplicación Powershell o Windows Terminal en modo administrador 
 2. Ejecutar el siguiente comando para crear una nueva solución
 ```
-dotnet new sln -o CustomerApp
+dotnet new sln -o ATM
 ```
 3. Acceder a la solución creada y ejecutar el siguiente comando para crear una nueva libreria de clases y adicionarla a la solución actual.
 ```
-cd CustomerApp
-dotnet new classlib -o CustomerApp.Domain
-dotnet sln add ./CustomerApp.Domain/CustomerApp.Domain.csproj
+cd ATM
+dotnet new classlib -o ATM.Domain
+dotnet sln add ./ATM.Domain/ATM.Domain.csproj
 ```
 4. Ejecutar el siguiente comando para crear un nuevo proyecto de pruebas y adicionarla a la solución actual
 ```
-dotnet new nunit -o CustomerApp.Domain.Tests
-dotnet sln add ./CustomerApp.Domain.Tests/CustomerApp.Domain.Tests.csproj
-dotnet add ./CustomerApp.Domain.Tests/CustomerApp.Domain.Tests.csproj reference ./CustomerApp.Domain/CustomerApp.Domain.csproj
+dotnet new nunit -o ATM.Domain.Tests
+dotnet sln add ./ATM.Domain.Tests/ATM.Domain.Tests.csproj
+dotnet add ./ATM.Domain.Tests/ATM.Domain.Tests.csproj reference ./ATM.Domain/ATM.Domain.csproj
 ```
-5. Iniciar Visual Studio Code (VS Code) abriendo el folder de la solución como proyecto. En el proyecto CustomerApp.Domain, si existe un archivo Class1.cs proceder a eliminarlo. Asimismo en el proyecto CustomerApp.Domain.Tests si existiese un archivo UnitTest1.cs, también proceder a eliminarlo.
+5. Iniciar Visual Studio Code (VS Code) abriendo el folder de la solución como proyecto. En el proyecto ATM.Domain, si existe un archivo Class1.cs proceder a eliminarlo. Asimismo en el proyecto ATM.Domain.Tests si existiese un archivo UnitTest1.cs, también proceder a eliminarlo.
 
-6. Primero se necesita implementar la entidad Cliente, para esto crear el archivo Customer.cs en el proyecto CustomerApp.Domain con el siguiente código:
+6. Inicialmente se necesita implementar la clase Cuenta que se utilizara en todas los comandos del ATM. Para esto crear el archivo Account.cs en el proyecto ATM.Domain con el siguiente código:
 ```C#
-namespace CustomerApp.Domain
+using System;
+namespace ATM.Domain
 {
-    public class Customer
+    public class Account
     {
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string MobileNumber { get; set; }
-        public string Address { get; set; }
-        public string Password { get; set; }
-        public static Customer Create(string name, string email, string mobileNumber, string address, string password)
-        {
-            return new Customer() {
-                Name = name, Email = email, MobileNumber = mobileNumber, Address = address, Password = password
-            };
-        }
-    }
-}
-```
-7. Ahora se debe implementar cada una de clases correspondiente al flujo de creaciòn del cliente (validar, guardar y enviar email) para eso se deberan crear los siguientes archivos con el còdigo correspondiente:
-> Validator.cs
-```C#
-namespace CustomerApp.Domain
-{
-    public class Validator
-    {
-        public bool ValidateCustomer(Customer customer)
-        {
-            //Need to Validate the Customer Object
-            if (string.IsNullOrEmpty(customer.Name)) throw new ArgumentException("Name can't be null or empty");
-            if (string.IsNullOrEmpty(customer.Email)) throw new ArgumentException("Email can't be null or empty");
-            if (string.IsNullOrEmpty(customer.MobileNumber)) throw new ArgumentException("MobileNumber can't be null or empty");
-            if (string.IsNullOrEmpty(customer.Address)) throw new ArgumentException("Address can't be null or empty");
-            return true;
-        }
-    }
-}
-```
-> DataAccessLayer.cs
-```C#
-namespace CustomerApp.Domain
-{
-    public class DataAccessLayer
-    {
-        public List<Customer> Customers { get; set; }
-        public DataAccessLayer()
-        {
-            Customers = new List<Customer>();
-        }
-        public bool SaveCustomer(Customer customer)
-        {
-            Customers.Add(customer);
-            return true;
-        }        
-    }
-}
-```
-> EmailService.cs
-```C#
-using System.Net;
-using System.Net.Mail;
+        public const decimal MAX_INPUT_AMOUNT = 10000;
+        public int AccountNumber { get; set; }
+        public decimal AccountBalance { get; set; }
 
-namespace CustomerApp.Domain
-{
-    public class EmailService
-    {
-        public bool SendRegistrationEmail(Customer customer)
+        public void Withdraw(decimal amount)
         {
-            var smtpClient = new SmtpClient("smtp.gmail.com")
-            {
-                UseDefaultCredentials = false,
-                //Port = 587,
-                Credentials = new NetworkCredential(customer.Email, customer.Password),
-                EnableSsl = true,
-            };
-            var mailMessage = new MailMessage
-            {
-                From = new MailAddress(customer.Email),
-                Subject = "Test mail",
-                Body = "<h1>Hello</h1>",
-                IsBodyHtml = true,
-            };
-            mailMessage.To.Add(customer.Email);
-            //smtpClient.Send(mailMessage);
-            return true;
+            if (amount > AccountBalance) 
+                throw new ArgumentException("The input amount is greater than balance.");
+            AccountBalance -= amount;            
+        }
+        public void Deposit(decimal amount)
+        {
+            if (amount > MAX_INPUT_AMOUNT) 
+                throw new ArgumentException("The input amount is greater than maximum allowed.");
+            AccountBalance += amount;            
+        }
+    }
+}
+```
+7. Seguidamente se necesita implementar la interfaz principal para la generación de comandos, para esto crear el archivo ICommand.cs en el proyecto ATM.Domain con el siguiente código:
+```C#
+namespace ATM.Domain
+{
+    // Command Interface
+    // It declares a method for executing a command
+    public interface ICommand
+    {
+        void Execute();
+    }
+}
+```
+8. Ahora se debe implementar cada una de clases correspondiente a los comandos de Retirar y Depositar para eso se deberan crear los siguientes archivos con el còdigo correspondiente:
+> WithdrawCommand.cs
+```C#
+namespace ATM.Domain
+{
+    public class WithdrawCommand : ICommand
+    {
+        Account _account;
+        decimal _amount;
+        public WithdrawCommand(Account account, decimal amount)
+        {
+            _account = account;
+            _amount = amount;
+        }
+        public void Execute()
+        {
+            _account.Withdraw(_amount);
+        }
+    }
+}
+```
+> DepositCommand.cs
+```C#
+namespace ATM.Domain
+{
+    public class DepositCommand : ICommand
+    {
+        Account _account;
+        decimal _amount;
+        public DepositCommand(Account account, decimal amount)
+        {
+            _account = account;
+            _amount = amount;
+        }
+        public void Execute()
+        {
+            _account.Deposit(_amount);
         }        
     }
 }
 ```
 
-8. Para probar esta implementación, crear el archivo CustomerTests.cs en el proyecto CustomerApp.Domain.Tests:
+8. Finalmente para unir todos los comandos crear la clase ATM que permitira el manejo de los comandos, crear el archivo ATM.cs en el proyecto ATM.Domain:
+```C#
+namespace ATM.Domain
+{
+    public class ATM
+    {
+        ICommand _command;
+        public ATM(ICommand command)
+        {
+            _command = command;
+        }
+        public void Action()
+        {
+            _command.Execute();
+        }
+    }
+}
+```
+
+9. Para probar esta implementación, crear el archivo ATMTests.cs en el proyecto ATM.Domain.Tests:
 ```C#
 using NUnit.Framework;
-
-namespace CustomerApp.Domain.Tests
+namespace ATM.Domain.Tests
 {
-    public class CustomerTests
+    public class ATMTests
     {
         [Test]
-        public void GivenANewCustomer_WhenRegister_ThenIsValidatedSavedEmailedSuccessfully()
+        public void GivenAccountAndWithdraw_ThenExecute_ReturnsCorrectAmount()
         {
-            //Step1: Create an Instance of Customer Class
-            Customer customer = Customer.Create(
-                "Jose Cuadros","p.cuadros@gmail.com","1234567890","Tacnamandapio","str0ng.pa55");
-            
-            //Step2: Validate the Customer
-            Validator validator = new Validator();
-            bool IsValid = validator.ValidateCustomer(customer);
-            //Step3: Save the Customer Object into the database
-            DataAccessLayer dataAccessLayer = new DataAccessLayer();
-            bool IsSaved = dataAccessLayer.SaveCustomer(customer);
-            //Step4: Send the Registration Email to the Customer
-            EmailService email = new EmailService();
-            bool IsEmailed = email.SendRegistrationEmail(customer);
-            
-            Assert.IsNotNull(customer);
-            Assert.Greater(dataAccessLayer.Customers.Count,0);
-            Assert.IsTrue(IsValid);
-            Assert.IsTrue(IsSaved);
-            Assert.IsTrue(IsEmailed);
+            var account = new Account() { AccountBalance = 300 };
+            decimal amount = 100;
+            var withdraw = new WithdrawCommand(account, amount);
+            new ATM(withdraw).Action();
+            Assert.IsTrue(account.AccountBalance.Equals(200));
+        }
+        [Test]
+        public void GivenAccountAndDeposit_ThenExecute_ReturnsCorrectAmount()
+        {
+            var account = new Account() { AccountBalance = 200 };
+            decimal amount = 100;
+            var deposit = new DepositCommand(account, amount);
+            new ATM(deposit).Action();
+            Assert.IsTrue(account.AccountBalance.Equals(300));
         }
     }
 }
 ```
-9. Ahora necesitamos comprobar las pruebas contruidas para eso abrir un terminal en VS Code (CTRL + Ñ) o vuelva al terminal anteriormente abierto, y ejecutar el comando:
+10. Ahora necesitamos comprobar las pruebas contruidas para eso abrir un terminal en VS Code (CTRL + Ñ) o vuelva al terminal anteriormente abierto, y ejecutar el comando:
 ```Bash
 dotnet test --collect:"XPlat Code Coverage"
 ```
-10. Si las pruebas se ejecutaron correctamente debera aparcer un resultado similar al siguiente:
+11. Si las pruebas se ejecutaron correctamente debera aparcer un resultado similar al siguiente:
 ```Bash
-Total tests: 1. Passed: 1. Failed: 0. Skipped: 0
+Correctas! - Con error:     0, Superado:     2, Omitido:     0, Total:     2, Duración: 5 ms
 ```
-11. Entonces ¿cuál es problema con este diseño? Funciona.... pero el problema es que ahora existen muchos sub sistemas como Validador, Acceso a Datos y Servicio de Email y el cliente que las utilice necesita seguir la secuencia apropiada para crear y consumir los objetos de los subsistemas. Existe una posibilidad que el cliente no siga esta secuencia apropiada o que olvide incluir o utilizar alguno de estos sub sistemas. Entonces si en vez de darle acceso a los sub sistemas, se crea una sola interfaz y se le brinda acceso al cliente para realizar el registo, asi la lógica compleja se traslada a esta interfaz sencilla. Para esto se utilizará el patrón FACHADA el cual escondera toda la complejidad y brindará un solo metodo cimple de usar al cliente.
+11. Revisemos como funciona el patrón de diseño Comando.
 
-![image](https://github.com/UPT-FAING-EPIS/SI889_PDS/assets/10199939/a9cb73bb-c996-4e9a-bf4c-f665f1957119)
+![image](https://github.com/UPT-FAING-EPIS/SI889_PDS/assets/10199939/50ecff5e-dc02-4b54-980f-8b72546b4129)
 
-12. Para lo cual proceder a crear el archivo CustomerRegistration.cs en el proyecto CustomerApp.Domain, con el siguiente contenido:
-```C#
-using CustomerApp.Domain;
+Como se puede apreciar la imagen, el patron de diseño Comando consiste de 5 componentes:
 
-public class CustomerRegistration
-{
-    public bool RegisterCustomer(Customer customer)
-    {
-        //Step1: Validate the Customer
-        Validator validator = new Validator();
-        bool IsValid = validator.ValidateCustomer(customer);
-        //Step1: Save the Customer Object into the database
-        DataAccessLayer customerDataAccessLayer = new DataAccessLayer();
-        bool IsSaved = customerDataAccessLayer.SaveCustomer(customer);
-        //Step3: Send the Registration Email to the Customer
-        EmailService email = new EmailService();
-        email.SendRegistrationEmail(customer);
-        return true;
-    }
-}
-```
-8. Finalmente adciionar un nuevo método de prueba en la clase CustomerTests para comprobar el funcionamiento de la nueva clase creada:
-```C#
-        [Test]
-        public void GivenANewCustomer_WhenRegister_ThenIsRegisteredSuccessfully()
-        {
-            //Step1: Create an Instance of Customer Class
-            Customer customer = Customer.Create(
-                "Jose Cuadros","p.cuadros@gmail.com","1234567890","Tacnamandapio","str0ng.pa55");
-            //Step2: Using Facade Class
-            bool IsRegistered = new CustomerRegistration().RegisterCustomer(customer);
-            Assert.IsNotNull(customer);
-            Assert.IsTrue(IsRegistered);
-        }     
-```
-9. Ahora necesitamos comprobar las pruebas contruidas para eso abrir un terminal en VS Code (CTRL + Ñ) o vuelva al terminal anteriormente abierto, y ejecutar el comando:
-```Bash
-dotnet test --collect:"XPlat Code Coverage"
-```
-10. Si las pruebas se ejecutaron correctamente debera aparcer un resultado similar al siguiente:
-```Bash
-Passed!  - Failed:     0, Passed:     2, Skipped:     0, Total:     2, Duration: 11 ms 
-```
-11. En el terminal, ejecutar el siguiente comando para generar el diagrama de clases respectivo, tener en consideración que ruta del DLL puede ser distinta según la versión de .NET tenga instalada en el equipo.
+Receiver: Es la clase que contiene la actual implementacionde los metods que el cliente quiere invocar. En este ejemplo la cuenta.
+Command: Esta viene a ser la interfaz que espeficica la operacion Ejecutar.
+ConcreteCommand: Con las clases que implementa la interfaz ICommand y proporcionan las implementaciones del metodo Ejecutar. 
+Invoker: El Invocador viene a ser la clase que resuelve que Command realiza determinada acción. En este caso la clase ATM.
+Client: Es la clase que crea y ejecuta el comando.
+
+12. En el terminal, ejecutar el siguiente comando para generar el diagrama de clases respectivo, tener en consideración que ruta del DLL puede ser distinta según la versión de .NET tenga instalada en el equipo.
 ```Bash
 dotnet tool install --global dll2mmd
-dll2mmd -f CustomerApp.Domain/bin/Debug/net8.0/CustomerApp.Domain.dll -o disenio.md
+dll2mmd -f ATM.Domain/bin/Debug/net7.0/ATM.Domain.dll -o atm.md
 ```
 
 ---
@@ -408,6 +394,8 @@ dll2mmd -f CustomerApp.Domain/bin/Debug/net8.0/CustomerApp.Domain.dll -o disenio
 2. Generar una automatización de nombre .github/workflows/package_nuget.yml (Github Workflow) que ejecute:
    * Pruebas unitarias y reporte de pruebas automatizadas
    * Realice el analisis con SonarCloud.
-   * Contruya un archivo .nuget a partir del proyecto Notifications.Domain y del proyecto CustomerApp.Domain y los publique como un Paquete de Github
-3. Generar una automatización de nombre .github/workflows/release_version.yml (Github Workflow) que contruya la version (release) de cada  paquete y publique en Github Releases e incluya los nugets generados
+   * Contruya un archivo .nuget a partir del proyecto Payment.Domain y del proyecto ATM.Domain y los publique como un Paquete de Github
+3. Generar una automatización de nombre .github/workflows/release_version.yml (Github Workflow) que contruya la version (release) de cada paquete y publique en Github Releases e incluya los nugets generados
 
+1. Crear un nuevo proyecto ```dotnet new sln -o Comportamiento``` el cual debe incluir su proyecto de dominio y su respectivo proyecto de pruebas utilizando otro patrón de diseño de COMPORTAMIENTO.
+2. Crear un nuevo archivo Markdown llamado comportamiento.md que incluya el paso a paso del punto 1 incluyendo su diagrama generado en código Mermaid.
